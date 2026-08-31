@@ -1,6 +1,7 @@
-import { ClockCounterClockwise, FloppyDisk, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { ClockCounterClockwise, FloppyDisk } from "@phosphor-icons/react";
 import { formatVnd } from "../domain/cost";
 import type { CostHistoryEntry } from "../state/use-cost-data";
+import { HistoryDifference } from "./history-difference";
 
 interface CostHistoryProps {
   readonly productName: string;
@@ -48,19 +49,7 @@ export const CostHistory = ({ productName, entries, canSave, onSave }: CostHisto
                   <strong>{formatVnd(entry.total)} đ</strong>
                   <small>{formatHistoryDate(entry.savedAt)}</small>
                 </span>
-                {difference === null ? (
-                  <em>Lần đầu</em>
-                ) : difference < 0 ? (
-                  <em className="history-difference history-difference--down">
-                    <TrendDown aria-hidden size={16} /> Giảm {formatVnd(Math.abs(difference))} đ
-                  </em>
-                ) : difference > 0 ? (
-                  <em className="history-difference history-difference--up">
-                    <TrendUp aria-hidden size={16} /> Tăng {formatVnd(difference)} đ
-                  </em>
-                ) : (
-                  <em>Không đổi</em>
-                )}
+                <HistoryDifference difference={difference} />
               </summary>
               <div className="history-breakdown">
                 {entry.lines.map((item) => (

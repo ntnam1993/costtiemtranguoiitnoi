@@ -21,6 +21,9 @@ test("keeps every primary mobile surface free of WCAG A/AA violations", async ({
   await page.getByRole("button", { name: "Một ly" }).click();
   await expectAccessible(page, "finished cup calculator");
 
+  await page.getByRole("button", { name: "Lịch sử" }).click();
+  await expectAccessible(page, "cost history");
+
   await page.getByRole("button", { name: "Cài đặt" }).click();
   await expectAccessible(page, "settings");
 });

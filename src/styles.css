@@ -333,7 +333,7 @@ p {
   bottom: 0;
   left: max(0px, calc((100vw - 760px) / 2));
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   min-height: calc(72px + env(safe-area-inset-bottom));
   padding: 7px 6px env(safe-area-inset-bottom);
   border-top: 1px solid var(--border);
@@ -1005,6 +1005,142 @@ p {
   color: var(--primary);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+.history-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.history-overview > div {
+  min-width: 0;
+  padding: 12px 8px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.history-overview span,
+.history-overview strong {
+  display: block;
+}
+
+.history-overview span {
+  min-height: 27px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.history-overview strong {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--primary);
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-filter {
+  margin-top: 14px;
+}
+
+.history-empty-state {
+  margin-top: 16px;
+  color: var(--action);
+}
+
+.history-empty-state .primary-button {
+  margin-top: 18px;
+}
+
+.history-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.history-log-entry {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 5px 20px rgba(20, 63, 43, 0.045);
+}
+
+.history-log-entry summary {
+  display: flex;
+  min-height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.history-log-entry summary::-webkit-details-marker {
+  display: none;
+}
+
+.history-log-entry__identity,
+.history-log-entry__cost {
+  min-width: 0;
+}
+
+.history-log-entry__identity strong,
+.history-log-entry__identity small,
+.history-log-entry__cost > strong {
+  display: block;
+}
+
+.history-log-entry__identity strong {
+  overflow: hidden;
+  color: var(--primary);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-log-entry__identity small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.history-log-entry__cost {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.history-log-entry__cost > strong {
+  color: var(--primary);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-log-entry__cost em {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.history-log-entry__cost .history-difference--down {
+  color: var(--action);
+}
+
+.history-log-entry__cost .history-difference--up {
+  color: var(--coral);
 }
 
 .settings-screen {

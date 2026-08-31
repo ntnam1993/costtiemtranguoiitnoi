@@ -23,7 +23,7 @@ npm run test:e2e
 
 - **Mẻ nguyên liệu**: chọn công thức ủ/ướp, nhập quy cách và giá mua hiện tại, sau đó nhập lượng thành phẩm dùng được. Phép tính này loại trà, đá, ly, nắp, ống hút và chi phí phục vụ theo ly.
 - **Một ly**: chọn món, tự dùng đơn giá mẻ đã đủ dữ liệu khi đơn vị khớp, nhập giá còn thiếu và bật/tắt đá, bao bì hoặc thành phần theo cách bán thực tế.
-- **Lịch sử cost**: khi một món đã đủ giá, bấm **Lưu cost hiện tại** để chốt tổng cost, ngày giờ và chi tiết từng thành phần. Những lần lưu sau tự hiển thị mức tăng/giảm so với lần liền trước của đúng món đó.
+- **Lịch sử cost**: khi một món đã đủ giá, bấm **Lưu cost hiện tại** để chốt tổng cost, ngày giờ và chi tiết từng thành phần. Tab **Lịch sử** cho phép xem tất cả lần lưu, lọc theo món và tự hiển thị mức tăng/giảm so với lần liền trước của đúng món đó.
 
 Giá hoặc sản lượng còn thiếu luôn tạo trạng thái “chưa đủ”, không được ngầm xem là 0. Các đơn vị `g/kg` và `ml/l` được quy đổi trong cùng nhóm; `trái`, `miếng`, `vá`, `hạt`, `phần` giữ nguyên như tài liệu.
 

@@ -25,8 +25,8 @@ The interface combines a clear operational calculator with the warmth of a Vietn
 - Result card: dark green sticky summary with complete/incomplete label and missing-field count.
 - Inputs: numeric keyboard hints, explicit units outside inputs, 44 px minimum height, visible focus rings.
 - Missing data: coral outline and plain Vietnamese explanation; no missing field is treated as zero.
-- Cost history: a per-product local timeline with timestamp, expandable breakdown, and explicit increase/decrease against the immediately previous saved total.
-- Navigation: four text-plus-line-icon tabs labeled `Thực đơn`, `Mẻ nguyên liệu`, `Một ly`, `Cài đặt`.
+- Cost history: a dedicated all-product screen with per-product filtering, timestamp, expandable breakdown, and explicit increase/decrease against the immediately previous saved total for the same product.
+- Navigation: five text-plus-line-icon tabs labeled `Thực đơn`, `Mẻ nguyên liệu`, `Một ly`, `Lịch sử`, `Cài đặt`.
 
 ## Responsive rules
 

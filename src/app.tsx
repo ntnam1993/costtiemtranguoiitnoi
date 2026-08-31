@@ -1,17 +1,25 @@
-import { CookingPot, GearSix, ListMagnifyingGlass, Receipt } from "@phosphor-icons/react";
-import { useState } from "react";
+import {
+  ClockCounterClockwise,
+  CookingPot,
+  GearSix,
+  ListMagnifyingGlass,
+  Receipt,
+} from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 import { BatchCostScreen } from "./screens/batch-cost-screen";
 import { CupCostScreen } from "./screens/cup-cost-screen";
+import { HistoryScreen } from "./screens/history-screen";
 import { MenuScreen } from "./screens/menu-screen";
 import { SettingsScreen } from "./screens/settings-screen";
 import { useCostData } from "./state/use-cost-data";
 
-type Tab = "menu" | "batch" | "cup" | "settings";
+type Tab = "menu" | "batch" | "cup" | "history" | "settings";
 
 const navItems = [
   { id: "menu", label: "Thực đơn", icon: ListMagnifyingGlass },
   { id: "batch", label: "Mẻ nguyên liệu", icon: CookingPot },
   { id: "cup", label: "Một ly", icon: Receipt },
+  { id: "history", label: "Lịch sử", icon: ClockCounterClockwise },
   { id: "settings", label: "Cài đặt", icon: GearSix },
 ] satisfies readonly { readonly id: Tab; readonly label: string; readonly icon: typeof GearSix }[];
 
@@ -20,6 +28,10 @@ export const App = () => {
   const [batchId, setBatchId] = useState("nhiet-doi");
   const [productId, setProductId] = useState("nhiet-doi");
   const costData = useCostData();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
 
   const calculateProduct = (id: string) => {
     setProductId(id);
@@ -60,6 +72,9 @@ export const App = () => {
           onSaveHistory={costData.saveHistory}
           onSelect={setProductId}
         />
+      ) : null}
+      {tab === "history" ? (
+        <HistoryScreen history={costData.data.history} onOpenCalculator={() => setTab("cup")} />
       ) : null}
       {tab === "settings" ? <SettingsScreen data={costData.data} onReset={resetData} /> : null}
       <nav aria-label="Điều hướng chính" className="bottom-nav">

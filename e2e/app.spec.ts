@@ -57,6 +57,14 @@ test("calculates one complete cup with an itemized seasonal price breakdown", as
   await expect(page.getByRole("region", { name: "Lịch sử cost · Me đác đậm vị" })).toContainText(
     "Giảm 200 đ",
   );
+  await page.getByRole("button", { name: "Lịch sử" }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.getByRole("heading", { name: "Lịch sử cost" })).toBeVisible();
+  await expect(page.getByLabel("Lọc lịch sử theo món")).toHaveValue("all");
+  await expect(page.getByRole("region", { name: "Các lần chốt cost" })).toContainText(
+    "Me đác đậm vị",
+  );
+  await expect(page.getByRole("region", { name: "Các lần chốt cost" })).toContainText("Giảm 200 đ");
 });
 
 test("reloads the cached app shell while offline", async ({ page, context }) => {
