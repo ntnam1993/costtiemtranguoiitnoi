@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+dist/
+test-results/
+playwright-report/
+coverage/
+*.tsbuildinfo
+*.local
+
+# Original shop documents stay on the local machine; the app ships only derived data/assets.
+docs/

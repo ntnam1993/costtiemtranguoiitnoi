@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fruit Tea PWA Planner"
+  short_description: "Plan a static fruit-tea cost PWA"
+  default_prompt: "Use $plan-fruit-tea-pwa to create an implementation-ready plan for the fruit-tea recipe and cost-calculation PWA."

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Biểu tượng Sổ Trà Trái Cây</title>
+  <rect width="512" height="512" rx="112" fill="#143f2b"/>
+  <path d="M168 168h176l-18 218c-2 27-25 48-52 48h-36c-27 0-50-21-52-48z" fill="#fff8e9"/>
+  <path d="M188 226h136l-12 145c-1 13-12 23-25 23h-62c-13 0-24-10-25-23z" fill="#d9a632"/>
+  <path d="M320 87c-46 2-77 25-90 67 47 2 78-20 90-67z" fill="#78a55a"/>
+  <path d="M252 174c7-36 29-61 65-75" fill="none" stroke="#dcebd5" stroke-linecap="round" stroke-width="18"/>
+  <circle cx="224" cy="283" r="20" fill="#d9603f"/>
+  <circle cx="282" cy="326" r="18" fill="#f7f3e8"/>
+</svg>
