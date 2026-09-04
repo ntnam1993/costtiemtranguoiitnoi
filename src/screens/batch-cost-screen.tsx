@@ -1,11 +1,12 @@
 import { CheckCircle, Info, WarningCircle } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
+import { BatchIngredientRow } from "../components/batch-ingredient-row";
 import { NumberField } from "../components/number-field";
 import { ScreenHeader } from "../components/screen-header";
 import { preparations } from "../data/preparations";
-import { compatibleUnits, formatVnd } from "../domain/cost";
+import { formatVnd } from "../domain/cost";
 import { isUnit, type PriceEntry, type Unit } from "../domain/models";
-import { calculatePreparationCost, preparationIngredientUsageKey } from "../domain/prepared-cost";
+import { calculatePreparationCost } from "../domain/prepared-cost";
 import type { StoredCostData } from "../state/use-cost-data";
 
 const yieldUnits: readonly Unit[] = ["g", "kg", "ml", "l", "phần"];
@@ -45,11 +46,15 @@ export const BatchCostScreen = ({
   );
 
   if (recipe === undefined || result === null) return null;
+  const hardFruitItems = recipe.ingredients.filter(
+    (item) => item.batchGroup === "tropical-hard-fruit",
+  );
+  const standaloneItems = recipe.ingredients.filter((item) => item.batchGroup === undefined);
 
   return (
     <main className="screen calculator-screen">
       <ScreenHeader
-        description="Nhập giá mua hiện tại, lượng sinh tố dùng và sản lượng thực tế."
+        description="Nhập lượng thực dùng và giá theo cách mua của từng nguyên liệu."
         eyebrow="Màn hình 1"
         title="Cost mẻ nguyên liệu"
       />
@@ -72,8 +77,8 @@ export const BatchCostScreen = ({
       </div>
       <div className="section-row section-row--stack-mobile">
         <div>
-          <h2>Giá nguyên liệu hiện tại</h2>
-          <span>{recipe.ingredients.length} định lượng từ công thức</span>
+          <h2>Chi phí nguyên liệu của mẻ</h2>
+          <span>{recipe.ingredients.length} nguyên liệu trong công thức</span>
         </div>
         <button
           className="text-button"
@@ -94,118 +99,43 @@ export const BatchCostScreen = ({
         </div>
       ) : null}
       <div className="price-list">
-        {recipe.ingredients.map((item) => {
-          const storedEntry = data.batchPrices[item.id];
-          const isLiterBottle = item.pricingMode === "liter-bottle-by-milliliter";
-          const hasOneLiterPrice = storedEntry?.packQuantity === 1 && storedEntry.packUnit === "l";
-          const entry: PriceEntry = isLiterBottle
-            ? hasOneLiterPrice
-              ? storedEntry
-              : { packQuantity: 1, packUnit: "l", price: null }
-            : (storedEntry ?? {
-                packQuantity: null,
-                packUnit: item.unit,
-                price: null,
-              });
-          const usageKey = preparationIngredientUsageKey(recipe.id, item.id);
-          const usageMilliliters = data.batchUsageMilliliters[usageKey] ?? null;
-          const lineCost = result.lineCosts[item.id] ?? null;
-          return (
-            <article className="price-row" key={item.id}>
-              <div className="price-row__heading">
-                <div>
-                  <strong>{item.name}</strong>
-                  <span>
-                    {isLiterBottle
-                      ? "Chai 1 lít · hệ thống tự tính theo số ml dùng"
-                      : `Cần ${item.quantity} ${item.unit}`}
-                  </span>
-                </div>
-                <span
-                  className={lineCost === null ? "line-total line-total--missing" : "line-total"}
-                >
-                  {lineCost === null
-                    ? isLiterBottle
-                      ? "Chưa đủ dữ liệu"
-                      : "Chưa đủ giá"
-                    : `${formatVnd(lineCost)} đ`}
-                </span>
-              </div>
-              <div className="price-row__inputs">
-                {isLiterBottle ? (
-                  <>
-                    <div>
-                      <span className="field-label">Giá mua (chai 1 lít)</span>
-                      <NumberField
-                        label={`Giá mua chai 1 lít ${item.name}`}
-                        placeholder="0"
-                        suffix="đ"
-                        value={entry.price}
-                        onChange={(price) =>
-                          onPriceChange(item.id, { packQuantity: 1, packUnit: "l", price })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <span className="field-label">Lượng dùng cho mẻ</span>
-                      <NumberField
-                        invalid={usageMilliliters !== null && usageMilliliters <= 0}
-                        label={`Lượng dùng cho mẻ ${item.name}`}
-                        placeholder="0"
-                        suffix="ml"
-                        value={usageMilliliters}
-                        onChange={(milliliters) => onUsageMillilitersChange(usageKey, milliliters)}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <span className="field-label">Quy cách mua</span>
-                      <div className="quantity-combo">
-                        <NumberField
-                          invalid={entry.packQuantity !== null && entry.packQuantity <= 0}
-                          label={`Quy cách mua ${item.name}`}
-                          placeholder="VD: 1"
-                          value={entry.packQuantity}
-                          onChange={(packQuantity) =>
-                            onPriceChange(item.id, { ...entry, packQuantity })
-                          }
-                        />
-                        <select
-                          aria-label={`Đơn vị mua ${item.name}`}
-                          value={entry.packUnit}
-                          onChange={(event) => {
-                            const unit = event.currentTarget.value;
-                            if (isUnit(unit)) {
-                              onPriceChange(item.id, { ...entry, packUnit: unit });
-                            }
-                          }}
-                        >
-                          {compatibleUnits(item.unit).map((unit) => (
-                            <option key={unit} value={unit}>
-                              {unit}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <div>
-                      <span className="field-label">Giá mua</span>
-                      <NumberField
-                        label={`Giá mua ${item.name}`}
-                        placeholder="0"
-                        suffix="đ"
-                        value={entry.price}
-                        onChange={(price) => onPriceChange(item.id, { ...entry, price })}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            </article>
-          );
-        })}
+        {hardFruitItems.length > 0 ? (
+          <section
+            aria-labelledby="hard-fruit-group-title"
+            className="ingredient-group"
+            role="group"
+          >
+            <div className="ingredient-group__heading">
+              <h3 id="hard-fruit-group-title">Trái cây cứng hỗn hợp</h3>
+              <span>{hardFruitItems.length} loại · nhập chi phí riêng</span>
+            </div>
+            <div className="ingredient-group__items">
+              {hardFruitItems.map((item) => (
+                <BatchIngredientRow
+                  compact
+                  data={data}
+                  item={item}
+                  key={item.id}
+                  lineCost={result.lineCosts[item.id] ?? null}
+                  recipeId={recipe.id}
+                  onPriceChange={onPriceChange}
+                  onUsageMillilitersChange={onUsageMillilitersChange}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+        {standaloneItems.map((item) => (
+          <BatchIngredientRow
+            data={data}
+            item={item}
+            key={item.id}
+            lineCost={result.lineCosts[item.id] ?? null}
+            recipeId={recipe.id}
+            onPriceChange={onPriceChange}
+            onUsageMillilitersChange={onUsageMillilitersChange}
+          />
+        ))}
       </div>
       <section className="yield-card">
         <div>

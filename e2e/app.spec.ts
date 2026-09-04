@@ -20,15 +20,51 @@ test("browses all documented drinks and opens a traceable recipe", async ({ page
 test("calculates a prepared batch and keeps excluded service costs out", async ({ page }) => {
   await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
   await page.getByLabel("Chọn mẻ cần tính").selectOption("mang-cau");
-  await page.getByLabel("Quy cách mua Mãng cầu đã sơ chế").fill("1000");
-  await page.getByLabel("Giá mua Mãng cầu đã sơ chế").fill("50000");
-  await page.getByLabel("Quy cách mua Đường").fill("1000");
-  await page.getByLabel("Giá mua Đường").fill("20000");
+  await page.getByLabel("Lượng dùng cho mẻ Mãng cầu đã sơ chế").fill("1000");
+  await page.getByLabel("Tổng tiền cho mẻ Mãng cầu đã sơ chế").fill("50000");
+  await page.getByLabel("Lượng dùng cho mẻ Đường").fill("1000");
+  await page.getByLabel("Giá mua / kg Đường").fill("20000");
   await page.getByLabel("Sản lượng thành phẩm").fill("1120");
   await page.getByLabel("Đơn vị thành phẩm").selectOption("ml");
-  await expect(page.getByText("Tổng cost mẻ").locator("..")).toContainText("56.000 đ");
+  await expect(page.getByText("Tổng cost mẻ").locator("..")).toContainText("70.000 đ");
   await expect(page.getByText(/Cost \/ ml/)).toHaveCount(0);
   await expect(page.getByText(/Không gồm trà, đá, ly, nắp, ống hút/)).toBeVisible();
+});
+
+test("separates tropical fruit costs and prices sugar by the kilogram", async ({ page }) => {
+  await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
+  const hardFruitGroup = page.getByRole("group", { name: "Trái cây cứng hỗn hợp" });
+  await expect(hardFruitGroup).toBeVisible();
+  await expect(hardFruitGroup.getByRole("article")).toHaveCount(6);
+  const fruitCosts = [
+    ["Dưa lưới", "2", "kg", "60000"],
+    ["Xoài", "1.5", "kg", "50000"],
+    ["Ổi", "1.2", "kg", "30000"],
+    ["Mận", "1", "kg", "30000"],
+    ["Đào trơn ruột vàng", "0.8", "kg", "30000"],
+    ["Dâu tây", "250", "g", "20000"],
+  ] as const;
+  for (const [name, quantity, unit, cost] of fruitCosts) {
+    await page.getByLabel(`Lượng dùng cho mẻ ${name}`).fill(quantity);
+    await page.getByLabel(`Đơn vị dùng ${name}`).selectOption(unit);
+    await page.getByLabel(`Tổng tiền cho mẻ ${name}`).fill(cost);
+  }
+  await page.getByLabel("Lượng dùng cho mẻ Đường").fill("3.3");
+  await page.getByLabel("Đơn vị dùng Đường").selectOption("kg");
+  await page.getByLabel("Giá mua / kg Đường").fill("106000");
+
+  await expect(page.getByRole("article").filter({ hasText: "Dưa lưới" })).toContainText("60.000 đ");
+  await expect(page.getByRole("article").filter({ hasText: "Đường" })).toContainText("349.800 đ");
+  await expect(page.getByText("Tổng cost mẻ").locator("..")).toContainText("569.800 đ");
+  await expect(hardFruitGroup).toContainText("6 loại · nhập chi phí riêng");
+  await expect(page.getByText(/^Cần /)).toHaveCount(0);
+
+  await page.getByLabel("Chọn mẻ cần tính").selectOption("mang-cau");
+  await expect(page.getByLabel("Lượng dùng cho mẻ Đường")).toHaveValue("");
+  await expect(page.getByLabel("Giá mua / kg Đường")).toHaveValue("");
+  await page.getByLabel("Chọn mẻ cần tính").selectOption("nhiet-doi");
+  await expect(page.getByLabel("Lượng dùng cho mẻ Đường")).toHaveValue("3.3");
+  await expect(page.getByLabel("Giá mua / kg Đường")).toHaveValue("106000");
 });
 
 test("prices a smoothie from a one-liter bottle and milliliters used", async ({ page }) => {

@@ -49,7 +49,9 @@ export interface PreparationIngredient {
   readonly name: string;
   readonly quantity: number;
   readonly unit: Unit;
-  readonly pricingMode?: "liter-bottle-by-milliliter";
+  readonly batchUnits?: readonly Unit[];
+  readonly batchGroup?: "tropical-hard-fruit";
+  readonly pricingMode?: "liter-bottle-by-milliliter" | "per-kilogram";
 }
 
 export interface PreparationRecipe {

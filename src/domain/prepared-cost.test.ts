@@ -43,4 +43,41 @@ describe("prepared batch cost", () => {
     expect(result.lineCosts.smoothie).toBeNull();
     expect(result.missingCount).toBe(1);
   });
+
+  it("keeps actual sugar usage scoped to its preparation batch", () => {
+    const sugarRecipe: PreparationRecipe = {
+      id: "tropical",
+      name: "Tropical",
+      ingredients: [
+        {
+          id: "sugar",
+          name: "Sugar",
+          quantity: 500,
+          unit: "g",
+          pricingMode: "per-kilogram",
+        },
+      ],
+      notes: [],
+      source: { file: "source.docx", section: "Tropical" },
+    };
+    const result = calculatePreparationCost(
+      sugarRecipe,
+      {
+        [preparationIngredientUsageKey("tropical", "sugar")]: {
+          packQuantity: 3.3,
+          packUnit: "kg",
+          price: 106_000,
+        },
+        [preparationIngredientUsageKey("another-batch", "sugar")]: {
+          packQuantity: 1,
+          packUnit: "kg",
+          price: 20_000,
+        },
+      },
+      { quantity: 1000, unit: "g" },
+    );
+
+    expect(result.lineCosts.sugar).toBe(349_800);
+    expect(result.batchCost).toBe(349_800);
+  });
 });

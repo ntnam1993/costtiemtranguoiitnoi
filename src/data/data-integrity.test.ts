@@ -33,4 +33,23 @@ describe("canonical recipe data", () => {
       }
     }
   });
+
+  it("keeps the tropical hard-fruit costs as separate source ingredients", () => {
+    const tropical = preparations.find((recipe) => recipe.id === "nhiet-doi");
+    expect(tropical?.ingredients.slice(0, 6).map((item) => item.name)).toEqual([
+      "Dưa lưới",
+      "Xoài",
+      "Ổi",
+      "Mận",
+      "Đào trơn ruột vàng",
+      "Dâu tây",
+    ]);
+    expect(tropical?.ingredients.some((item) => item.id === "trai-cung")).toBe(false);
+    expect(tropical?.ingredients.slice(0, 6).map((item) => item.batchUnits)).toEqual(
+      Array.from({ length: 6 }, () => ["g", "kg", "trái"]),
+    );
+    expect(tropical?.ingredients.slice(0, 6).map((item) => item.batchGroup)).toEqual(
+      Array.from({ length: 6 }, () => "tropical-hard-fruit"),
+    );
+  });
 });

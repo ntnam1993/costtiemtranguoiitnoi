@@ -1,4 +1,9 @@
-import { calculateLineCost, calculateLiterBottleCost, calculateUnitCost } from "./cost";
+import {
+  calculateBatchIngredientCost,
+  calculateLiterBottleCost,
+  calculatePerKilogramCost,
+  calculateUnitCost,
+} from "./cost";
 import type { PreparationRecipe, PriceEntry, Unit } from "./models";
 
 export interface YieldEntry {
@@ -27,15 +32,29 @@ export const calculatePreparationCost = (
   let batchCost = 0;
   let missingCount = 0;
   for (const item of recipe.ingredients) {
-    const entry = prices[item.id];
+    const entryKey = preparationIngredientUsageKey(recipe.id, item.id);
+    const entry =
+      prices[entryKey] ??
+      (item.pricingMode === "liter-bottle-by-milliliter" ? prices[item.id] : undefined);
     const isOneLiterBottle = entry?.packQuantity === 1 && entry.packUnit === "l";
-    const value =
-      item.pricingMode === "liter-bottle-by-milliliter"
-        ? calculateLiterBottleCost(
+    const pricingMode = item.pricingMode;
+    const value = (() => {
+      switch (pricingMode) {
+        case "liter-bottle-by-milliliter":
+          return calculateLiterBottleCost(
             isOneLiterBottle ? entry.price : null,
-            usageMilliliters[preparationIngredientUsageKey(recipe.id, item.id)] ?? null,
-          )
-        : calculateLineCost(item.quantity, item.unit, entry);
+            usageMilliliters[entryKey] ?? null,
+          );
+        case "per-kilogram":
+          return calculatePerKilogramCost(entry);
+        case undefined:
+          return calculateBatchIngredientCost(entry);
+        default: {
+          const unreachable: never = pricingMode;
+          return unreachable;
+        }
+      }
+    })();
     lineCosts[item.id] = value;
     if (value === null) missingCount += 1;
     else batchCost += value;

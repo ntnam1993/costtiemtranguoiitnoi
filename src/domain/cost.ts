@@ -43,6 +43,19 @@ export const calculateLineCost = (
   return converted === null ? null : (entry.price * converted) / entry.packQuantity;
 };
 
+export const calculateBatchIngredientCost = (entry: PriceEntry | undefined): number | null => {
+  if (
+    entry === undefined ||
+    entry.price === null ||
+    entry.packQuantity === null ||
+    entry.price < 0 ||
+    entry.packQuantity <= 0
+  ) {
+    return null;
+  }
+  return entry.price;
+};
+
 export const calculateLiterBottleCost = (
   bottlePrice: number | null,
   usedMilliliters: number | null,
@@ -51,6 +64,20 @@ export const calculateLiterBottleCost = (
     return null;
   }
   return (bottlePrice * usedMilliliters) / 1000;
+};
+
+export const calculatePerKilogramCost = (entry: PriceEntry | undefined): number | null => {
+  if (
+    entry === undefined ||
+    entry.price === null ||
+    entry.packQuantity === null ||
+    entry.price < 0 ||
+    entry.packQuantity <= 0
+  ) {
+    return null;
+  }
+  const kilograms = convertQuantity(entry.packQuantity, entry.packUnit, "kg");
+  return kilograms === null ? null : entry.price * kilograms;
 };
 
 export const calculateUnitCost = (batchCost: number, yieldQuantity: number): number | null =>

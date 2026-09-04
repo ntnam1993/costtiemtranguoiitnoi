@@ -603,6 +603,31 @@ p {
   gap: 10px;
 }
 
+.ingredient-group {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-muted);
+}
+
+.ingredient-group__heading h3 {
+  margin-bottom: 2px;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.ingredient-group__heading span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ingredient-group__items {
+  display: grid;
+  gap: 8px;
+}
+
 .price-row,
 .cup-cost-row {
   padding: 14px;
@@ -610,6 +635,21 @@ p {
   border-radius: 16px;
   background: var(--surface);
   box-shadow: 0 3px 12px rgba(20, 63, 43, 0.035);
+}
+
+.price-row--compact {
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.price-row--compact .price-row__inputs {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.price-row--compact .price-row__heading strong {
+  font-size: 12px;
 }
 
 .price-row__heading,

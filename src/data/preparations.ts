@@ -11,15 +11,35 @@ const smoothieIngredient = (id: string, name: string, quantity: number): Prepara
   ...ingredient(id, name, quantity, "ml"),
   pricingMode: "liter-bottle-by-milliliter",
 });
+const sugarIngredient = (id: string, name: string, quantity: number): PreparationIngredient => ({
+  ...ingredient(id, name, quantity, "g"),
+  pricingMode: "per-kilogram",
+});
+const tropicalFruitUnits = ["g", "kg", "trái"] as const;
+const tropicalFruitIngredient = (
+  id: string,
+  name: string,
+  quantity: number,
+  unit: Unit,
+): PreparationIngredient => ({
+  ...ingredient(id, name, quantity, unit),
+  batchGroup: "tropical-hard-fruit",
+  batchUnits: tropicalFruitUnits,
+});
 const source = (section: string) => ({ file: sourceFile, section });
 
 export const preparations = [
   {
     id: "nhiet-doi",
-    name: "Cốt & topping nhiệt đới (mốc 1 kg trái cứng)",
+    name: "Cốt & topping nhiệt đới",
     ingredients: [
-      ingredient("trai-cung", "Trái cây cứng hỗn hợp", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      tropicalFruitIngredient("nhiet-doi-dua-luoi", "Dưa lưới", 2, "trái"),
+      tropicalFruitIngredient("nhiet-doi-xoai", "Xoài", 10, "trái"),
+      tropicalFruitIngredient("nhiet-doi-oi", "Ổi", 12, "trái"),
+      tropicalFruitIngredient("nhiet-doi-man", "Mận", 15, "trái"),
+      tropicalFruitIngredient("nhiet-doi-dao", "Đào trơn ruột vàng", 10, "trái"),
+      tropicalFruitIngredient("nhiet-doi-dau-tay", "Dâu tây", 250, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-xoai", "Sinh tố xoài Berino", 25),
       smoothieIngredient("sinh-to-oi", "Sinh tố ổi Berino", 25),
       smoothieIngredient("sinh-to-thom", "Sinh tố thơm Berino", 25),
@@ -41,7 +61,7 @@ export const preparations = [
     name: "Mãng cầu ủ đường",
     ingredients: [
       ingredient("mang-cau", "Mãng cầu đã sơ chế", 1000, "g"),
-      ingredient("duong", "Đường", 300, "g"),
+      sugarIngredient("duong", "Đường", 300),
     ],
     notes: ["Cấp mát tối thiểu 4 giờ, ngon nhất sau một đêm ở 6–8°C."],
     source: source("TRÀ MÃNG CẦU"),
@@ -51,7 +71,7 @@ export const preparations = [
     name: "Xoài chanh dây ủ",
     ingredients: [
       ingredient("xoai", "Xoài keo / Tứ quý", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-chanh-day", "Sinh tố chanh dây Berino", 50),
       smoothieIngredient("sinh-to-xoai", "Sinh tố xoài Berino", 120),
     ],
@@ -63,7 +83,7 @@ export const preparations = [
     name: "Ổi hồng ủ",
     ingredients: [
       ingredient("oi-rubi", "Ổi Rubi", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-oi", "Sinh tố ổi Berino", 120),
     ],
     notes: ["Ủ mát ít nhất 8 giờ; tốt nhất hai đêm."],
@@ -74,7 +94,7 @@ export const preparations = [
     name: "Dâu tây ủ",
     ingredients: [
       ingredient("dau-tay", "Dâu tây", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-dau", "Sinh tố dâu Berino", 120),
     ],
     notes: ["Sên nhẹ đến khi xuất hiện cột hơi rồi tắt; để mát 1–2 đêm."],
@@ -83,7 +103,7 @@ export const preparations = [
   {
     id: "man-hau",
     name: "Mận hậu ủ",
-    ingredients: [ingredient("man", "Mận hậu", 1000, "g"), ingredient("duong", "Đường", 500, "g")],
+    ingredients: [ingredient("man", "Mận hậu", 1000, "g"), sugarIngredient("duong", "Đường", 500)],
     notes: ["Ủ mát một đêm, ngon nhất từ hai đêm."],
     source: source("TRÀ MẬN HẬU"),
   },
@@ -92,7 +112,7 @@ export const preparations = [
     name: "Dưa lưới ủ",
     ingredients: [
       ingredient("dua-luoi", "Dưa lưới", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-dua-luoi", "Sinh tố dưa lưới GoldenFarm", 120),
     ],
     notes: ["Giữ khô khi sơ chế; ủ mát qua đêm."],
@@ -103,7 +123,7 @@ export const preparations = [
     name: "Cốt sầu riêng",
     ingredients: [
       ingredient("sau-rieng", "Thịt sầu riêng Ri6", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
     ],
     notes: ["Dùng 1/2 thìa muối theo tài liệu; chưa tính vì không có quy đổi khối lượng."],
     source: source("TRÀ SẦU RIÊNG DỨA"),
@@ -113,7 +133,7 @@ export const preparations = [
     name: "Cóc ủ",
     ingredients: [
       ingredient("coc", "Cóc cầy đã sơ chế", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
     ],
     notes: ["Ủ mát ít nhất 2 giờ; ngon nhất sau 1–2 đêm."],
     source: source("TRÀ CÓC THƠM"),
@@ -123,7 +143,7 @@ export const preparations = [
     name: "Thơm ủ",
     ingredients: [
       ingredient("thom", "Thơm đã sơ chế", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
     ],
     notes: ["Ủ nhiệt độ phòng 2 giờ rồi cấp mát; bán tối đa 2 ngày."],
     source: source("TRÀ THƠM CHANH DÂY"),
@@ -134,7 +154,7 @@ export const preparations = [
     ingredients: [
       ingredient("thanh-long", "Thanh long ruột đỏ", 1000, "g"),
       ingredient("xoai", "Xoài chín", 1000, "g"),
-      ingredient("duong", "Đường", 1000, "g"),
+      sugarIngredient("duong", "Đường", 1000),
       smoothieIngredient("sinh-to-xoai", "Sinh tố xoài Berino", 150),
     ],
     notes: ["Tỉ lệ xoài và thanh long gần bằng nhau; ủ mát một đêm là ngon nhất."],
@@ -145,7 +165,7 @@ export const preparations = [
     name: "Nhãn ủ lá dứa",
     ingredients: [
       ingredient("nhan", "Cùi nhãn", 1000, "g"),
-      ingredient("duong", "Đường", 800, "g"),
+      sugarIngredient("duong", "Đường", 800),
       ingredient("nuoc", "Nước", 800, "ml"),
       ingredient("la-dua", "Lá dứa", 20, "g"),
     ],
@@ -157,7 +177,7 @@ export const preparations = [
     name: "Mít ủ",
     ingredients: [
       ingredient("mit", "Mít đã sơ chế", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
     ],
     notes: ["Chanh dây được thêm lúc pha, không cho vào mẻ ủ."],
     source: source("TRÀ MÍT CHANH DÂY"),
@@ -167,7 +187,7 @@ export const preparations = [
     name: "Táo chanh ủ",
     ingredients: [
       ingredient("tao", "Táo đỏ / Táo Envy", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-chanh-day", "Sinh tố chanh dây", 50),
     ],
     notes: ["Ngâm ủ qua đêm và bảo quản mát; chanh Quảng Đông dùng khi pha."],
@@ -178,7 +198,7 @@ export const preparations = [
     name: "Atiso đỏ ủ",
     ingredients: [
       ingredient("atiso", "Hoa atiso đỏ", 1000, "g"),
-      ingredient("duong", "Đường", 1000, "g"),
+      sugarIngredient("duong", "Đường", 1000),
       smoothieIngredient("sinh-to-dau", "Sinh tố dâu tây Berino", 30),
     ],
     notes: ["Sên nhẹ đến khi xuất hiện cột hơi; bảo quản mát khoảng 2 tháng."],
@@ -189,7 +209,7 @@ export const preparations = [
     name: "Dâu tằm ủ",
     ingredients: [
       ingredient("dau-tam", "Dâu tằm", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       smoothieIngredient("sinh-to-dau-tam", "Sinh tố dâu tằm GoldenFarm", 120),
     ],
     notes: ["Sên nhiệt nhẹ; bảo quản tối đa một tuần, ngon nhất 2–3 ngày."],
@@ -201,8 +221,8 @@ export const preparations = [
     ingredients: [
       ingredient("dac", "Hạt đác", 1000, "g"),
       ingredient("nuoc-cam", "Nước cam", 1000, "ml"),
-      ingredient("duong-dac", "Đường ướp đác", 500, "g"),
-      ingredient("duong-cam", "Đường cho nước cam", 300, "g"),
+      sugarIngredient("duong-dac", "Đường ướp đác", 500),
+      sugarIngredient("duong-cam", "Đường cho nước cam", 300),
       ingredient("chanh-day", "Chanh dây", 5, "trái"),
     ],
     notes: ["Tỉ lệ đác và nước cam 1:1; nấu 30–40 phút, tối đa một giờ."],
@@ -213,7 +233,7 @@ export const preparations = [
     name: "Đác dâu tằm",
     ingredients: [
       ingredient("dac", "Hạt đác", 1000, "g"),
-      ingredient("duong", "Đường", 500, "g"),
+      sugarIngredient("duong", "Đường", 500),
       ingredient("cot-dau-tam", "Nước cốt dâu tằm", 150, "ml"),
       ingredient("xac-dau-tam", "Xác dâu tằm", 150, "g"),
       smoothieIngredient("sinh-to-dau-tam", "Sinh tố dâu tằm GoldenFarm", 100),
@@ -226,8 +246,8 @@ export const preparations = [
     name: "Đác thơm",
     ingredients: [
       ingredient("dac", "Hạt đác", 1000, "g"),
-      ingredient("duong-phen", "Đường phèn", 200, "g"),
-      ingredient("duong-vang", "Đường cát vàng", 100, "g"),
+      sugarIngredient("duong-phen", "Đường phèn", 200),
+      sugarIngredient("duong-vang", "Đường cát vàng", 100),
       ingredient("thom", "Thơm tươi", 500, "g"),
       smoothieIngredient("sinh-to-thom", "Sinh tố thơm Berino", 50),
       smoothieIngredient("sinh-to-chanh-day", "Sinh tố chanh dây", 20),
@@ -241,7 +261,7 @@ export const preparations = [
     name: "Cốt me đậm vị",
     ingredients: [
       ingredient("thit-me", "Thịt me đã ray", 1000, "g"),
-      ingredient("duong", "Đường", 1800, "g"),
+      sugarIngredient("duong", "Đường", 1800),
       ingredient("thom", "Thơm chín", 800, "g"),
       smoothieIngredient("sinh-to-me", "Sinh tố me GoldenFarm", 150),
     ],
