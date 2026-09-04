@@ -43,6 +43,16 @@ export const calculateLineCost = (
   return converted === null ? null : (entry.price * converted) / entry.packQuantity;
 };
 
+export const calculateLiterBottleCost = (
+  bottlePrice: number | null,
+  usedMilliliters: number | null,
+): number | null => {
+  if (bottlePrice === null || usedMilliliters === null || bottlePrice < 0 || usedMilliliters <= 0) {
+    return null;
+  }
+  return (bottlePrice * usedMilliliters) / 1000;
+};
+
 export const calculateUnitCost = (batchCost: number, yieldQuantity: number): number | null =>
   batchCost >= 0 && yieldQuantity > 0 ? batchCost / yieldQuantity : null;
 

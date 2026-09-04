@@ -49,6 +49,7 @@ export interface PreparationIngredient {
   readonly name: string;
   readonly quantity: number;
   readonly unit: Unit;
+  readonly pricingMode?: "liter-bottle-by-milliliter";
 }
 
 export interface PreparationRecipe {

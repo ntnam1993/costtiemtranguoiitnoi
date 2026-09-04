@@ -60,6 +60,7 @@ export const App = () => {
           selectedId={batchId}
           onPriceChange={costData.setBatchPrice}
           onSelect={setBatchId}
+          onUsageMillilitersChange={costData.setBatchUsageMilliliters}
           onYieldChange={costData.setYield}
         />
       ) : null}

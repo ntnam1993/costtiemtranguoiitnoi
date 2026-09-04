@@ -27,8 +27,24 @@ test("calculates a prepared batch and keeps excluded service costs out", async (
   await page.getByLabel("Sản lượng thành phẩm").fill("1120");
   await page.getByLabel("Đơn vị thành phẩm").selectOption("ml");
   await expect(page.getByText("Tổng cost mẻ").locator("..")).toContainText("56.000 đ");
-  await expect(page.getByText("Cost / ml").locator("..")).toContainText("50 đ");
+  await expect(page.getByText(/Cost \/ ml/)).toHaveCount(0);
   await expect(page.getByText(/Không gồm trà, đá, ly, nắp, ống hút/)).toBeVisible();
+});
+
+test("prices a smoothie from a one-liter bottle and milliliters used", async ({ page }) => {
+  await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
+  await page.getByLabel("Giá mua chai 1 lít Sinh tố xoài Berino").fill("180000");
+  await page.getByLabel("Lượng dùng cho mẻ Sinh tố xoài Berino").fill("25");
+
+  await expect(page.getByRole("article").filter({ hasText: "Sinh tố xoài Berino" })).toContainText(
+    "4.500 đ",
+  );
+  await expect(page.getByText(/Cost \/ g/)).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
+  await expect(page.getByLabel("Giá mua chai 1 lít Sinh tố xoài Berino")).toHaveValue("180000");
+  await expect(page.getByLabel("Lượng dùng cho mẻ Sinh tố xoài Berino")).toHaveValue("25");
 });
 
 test("calculates one complete cup with an itemized seasonal price breakdown", async ({ page }) => {

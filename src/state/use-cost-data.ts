@@ -34,6 +34,7 @@ const historyEntrySchema = z.object({
 });
 const storedDataSchema = z.object({
   batchPrices: z.record(z.string(), priceEntrySchema),
+  batchUsageMilliliters: z.record(z.string(), z.number().nullable()).default({}),
   cupPrices: z.record(z.string(), priceEntrySchema),
   yields: z.record(z.string(), yieldEntrySchema),
   serviceIncluded: z.record(z.string(), z.boolean()),
@@ -46,6 +47,7 @@ export type CostHistoryEntry = z.infer<typeof historyEntrySchema>;
 
 const emptyData = (): StoredCostData => ({
   batchPrices: {},
+  batchUsageMilliliters: {},
   cupPrices: {},
   yields: {},
   serviceIncluded: {},
@@ -82,6 +84,13 @@ export const useCostData = () => {
     setData((current) => ({
       ...current,
       cupPrices: { ...current.cupPrices, [key]: entry },
+    }));
+  }, []);
+
+  const setBatchUsageMilliliters = useCallback((key: string, milliliters: number | null) => {
+    setData((current) => ({
+      ...current,
+      batchUsageMilliliters: { ...current.batchUsageMilliliters, [key]: milliliters },
     }));
   }, []);
 
@@ -124,6 +133,7 @@ export const useCostData = () => {
   return {
     data,
     setBatchPrice,
+    setBatchUsageMilliliters,
     setCupPrice,
     setYield,
     setServiceIncluded,

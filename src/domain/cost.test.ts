@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { calculateLineCost, calculateUnitCost, convertQuantity, roundVnd } from "./cost";
+import {
+  calculateLineCost,
+  calculateLiterBottleCost,
+  calculateUnitCost,
+  convertQuantity,
+  roundVnd,
+} from "./cost";
 
 describe("cost calculation", () => {
   it("converts mass and volume only within their dimensions", () => {
@@ -12,6 +18,12 @@ describe("cost calculation", () => {
     expect(calculateLineCost(500, "g", { packQuantity: 1, packUnit: "kg", price: 30_000 })).toBe(
       15_000,
     );
+  });
+
+  it("calculates smoothie cost from a one-liter bottle and milliliters used", () => {
+    expect(calculateLiterBottleCost(180_000, 120)).toBe(21_600);
+    expect(calculateLiterBottleCost(null, 120)).toBeNull();
+    expect(calculateLiterBottleCost(180_000, 0)).toBeNull();
   });
 
   it("keeps missing and invalid values incomplete", () => {

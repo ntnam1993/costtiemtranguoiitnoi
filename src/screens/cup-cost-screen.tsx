@@ -55,13 +55,18 @@ export const CupCostScreen = ({
   const preparedRates = useMemo(() => {
     const rates = new Map<string, { costPerUnit: number; unit: string }>();
     for (const recipe of preparations) {
-      const result = calculatePreparationCost(recipe, data.batchPrices, data.yields[recipe.id]);
+      const result = calculatePreparationCost(
+        recipe,
+        data.batchPrices,
+        data.yields[recipe.id],
+        data.batchUsageMilliliters,
+      );
       if (result.unitCost !== null) {
         rates.set(recipe.id, { costPerUnit: result.unitCost, unit: result.yieldUnit });
       }
     }
     return rates;
-  }, [data.batchPrices, data.yields]);
+  }, [data.batchPrices, data.batchUsageMilliliters, data.yields]);
 
   if (product === undefined) return null;
 
