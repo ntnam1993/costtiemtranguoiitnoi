@@ -31,6 +31,100 @@ test("calculates a prepared batch and keeps excluded service costs out", async (
   await expect(page.getByText(/Không gồm trà, đá, ly, nắp, ống hút/)).toBeVisible();
 });
 
+test("saves a prepared batch with its usable yield and ingredient breakdown", async ({ page }) => {
+  await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
+  await page.getByLabel("Chọn mẻ cần tính").selectOption("mang-cau");
+  await page.getByLabel("Lượng dùng cho mẻ Mãng cầu đã sơ chế").fill("1000");
+  await page.getByLabel("Tổng tiền cho mẻ Mãng cầu đã sơ chế").fill("50000");
+  await page.getByLabel("Lượng dùng cho mẻ Đường").fill("1000");
+  await page.getByLabel("Giá mua / kg Đường").fill("20000");
+  await page.getByLabel("Sản lượng thành phẩm").fill("1120");
+  await page.getByLabel("Đơn vị thành phẩm").selectOption("ml");
+
+  const batchHistory = page.getByRole("region", {
+    name: "Lịch sử cost mẻ · Mãng cầu ủ đường",
+  });
+  await batchHistory.getByRole("button", { name: "Lưu cost mẻ hiện tại" }).click();
+
+  await page.reload();
+  await page.getByRole("button", { name: "Lịch sử" }).click();
+  const entry = page
+    .getByRole("region", { name: "Các lần chốt cost" })
+    .getByRole("button", { name: /Mãng cầu ủ đường/ });
+  await expect(entry).toContainText("Mẻ nguyên liệu");
+  await expect(entry.getByText("Xem đầy đủ", { exact: true })).toBeVisible();
+  await entry.click();
+  const dialog = page.getByRole("dialog", { name: "Chi tiết cost Mãng cầu ủ đường" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("Thời gian lưu", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Tổng cost", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("2 thành phần", { exact: true })).toBeVisible();
+  await expect(dialog).toContainText("Thành phẩm dùng được");
+  await expect(dialog).toContainText("1.120 ml");
+  await expect(dialog).toContainText("Cost / ml");
+  await expect(dialog).toContainText("63 đ");
+  await expect(dialog).toContainText("Mãng cầu đã sơ chế");
+  await expect(dialog).toContainText("50.000 đ");
+  await expect(dialog).toContainText("Đường");
+  await expect(dialog).toContainText("20.000 đ");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
+test("saves an incomplete batch as a clearly marked estimate", async ({ page }) => {
+  await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
+  await page.getByLabel("Chọn mẻ cần tính").selectOption("mang-cau");
+  await page.getByLabel("Lượng dùng cho mẻ Mãng cầu đã sơ chế").fill("1000");
+  await page.getByLabel("Tổng tiền cho mẻ Mãng cầu đã sơ chế").fill("50000");
+
+  const batchHistory = page.getByRole("region", {
+    name: "Lịch sử cost mẻ · Mãng cầu ủ đường",
+  });
+  const saveButton = batchHistory.getByRole("button", { name: "Lưu cost mẻ hiện tại" });
+  await expect(saveButton).toBeEnabled();
+  await saveButton.click();
+
+  await page.reload();
+  await page.getByRole("button", { name: "Lịch sử" }).click();
+  await expect(page.getByRole("region", { name: "Tổng quan lịch sử" })).toContainText(
+    "Mới nhất · tạm tính",
+  );
+  const entry = page
+    .getByRole("region", { name: "Các lần chốt cost" })
+    .getByRole("button", { name: /Mãng cầu ủ đường/ });
+  await expect(entry).toContainText("Chưa đủ 2 mục");
+  await entry.click();
+  const dialog = page.getByRole("dialog", { name: "Chi tiết cost Mãng cầu ủ đường" });
+  await expect(dialog.getByText("Tổng tạm tính", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Chưa nhập", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Chưa tính", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("1 thành phần đã có giá", { exact: true })).toBeVisible();
+  await expect(dialog).toContainText("50.000 đ");
+});
+
+test("saves an incomplete cup as a clearly marked estimate", async ({ page }) => {
+  await page.getByRole("button", { name: "Một ly" }).click();
+  await page.getByLabel("Chọn món cần tính").selectOption("me-dac");
+  await page.getByLabel("Đơn giá Cốt me đậm vị").fill("10");
+
+  const cupHistory = page.getByRole("region", { name: "Lịch sử cost · Me đác đậm vị" });
+  const saveButton = cupHistory.getByRole("button", { name: "Lưu cost hiện tại" });
+  await expect(saveButton).toBeEnabled();
+  await saveButton.click();
+
+  await page.reload();
+  await page.getByRole("button", { name: "Lịch sử" }).click();
+  const entry = page
+    .getByRole("region", { name: "Các lần chốt cost" })
+    .getByRole("button", { name: /Me đác đậm vị/ });
+  await expect(entry).toContainText("Chưa đủ 6 mục");
+  await entry.click();
+  const dialog = page.getByRole("dialog", { name: "Chi tiết cost Me đác đậm vị" });
+  await expect(dialog.getByText("Tổng tạm tính", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("1 thành phần đã có giá", { exact: true })).toBeVisible();
+  await expect(dialog).toContainText("1.000 đ");
+});
+
 test("separates tropical fruit costs and prices sugar by the kilogram", async ({ page }) => {
   await page.getByRole("button", { name: "Mẻ nguyên liệu" }).click();
   const hardFruitGroup = page.getByRole("group", { name: "Trái cây cứng hỗn hợp" });
@@ -97,7 +191,7 @@ test("calculates one complete cup with an itemized seasonal price breakdown", as
   await expect(page.getByText("Đã đủ giá đang chọn")).toBeVisible();
   const history = page.getByRole("region", { name: "Lịch sử cost · Me đác đậm vị" });
   await history.getByRole("button", { name: "Lưu cost hiện tại" }).click();
-  await expect(history.getByText("4.100 đ")).toBeVisible();
+  await expect(history.getByRole("button", { name: /4\.100 đ/ })).toBeVisible();
   await page.getByLabel("Đơn giá Ly + nắp").fill("1000");
   await expect(page.getByText("Tổng cost 1 ly").locator("..")).toContainText("3.900 đ");
   await history.getByRole("button", { name: "Lưu cost hiện tại" }).click();
@@ -112,7 +206,7 @@ test("calculates one complete cup with an itemized seasonal price breakdown", as
   await page.getByRole("button", { name: "Lịch sử" }).click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(page.getByRole("heading", { name: "Lịch sử cost" })).toBeVisible();
-  await expect(page.getByLabel("Lọc lịch sử theo món")).toHaveValue("all");
+  await expect(page.getByLabel("Lọc lịch sử theo mục")).toHaveValue("all");
   await expect(page.getByRole("region", { name: "Các lần chốt cost" })).toContainText(
     "Me đác đậm vị",
   );

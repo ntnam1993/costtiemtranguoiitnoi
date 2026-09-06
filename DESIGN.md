@@ -26,10 +26,12 @@ The interface combines a clear operational calculator with the warmth of a Vietn
 - Result card: dark green sticky summary with complete/incomplete label and missing-field count.
 - Inputs: numeric keyboard hints, explicit units outside inputs, 44 px minimum height, visible focus rings.
 - Missing data: coral outline and plain Vietnamese explanation; no missing field is treated as zero.
-- Cost history: a dedicated all-product screen with per-product filtering, timestamp, expandable breakdown, and explicit increase/decrease against the immediately previous saved total for the same product.
+- Cost history: a dedicated screen for both prepared batches and finished cups, with type-aware filtering, timestamp, and explicit increase/decrease between completed results for the same subject and type. Incomplete snapshots remain saveable but are visibly marked with their missing-field count and partial total. Each history row is a full-width `Xem đầy đủ` target that opens a modal sheet with saved metadata, completeness state, available batch yield and unit cost, plus every ingredient whose cost was available when saved.
 - Navigation: five text-plus-line-icon tabs labeled `Thực đơn`, `Mẻ nguyên liệu`, `Một ly`, `Lịch sử`, `Cài đặt`.
 
 ## Responsive rules
+
+- Treat the iPhone 14 Pro viewport (`393 × 852` CSS pixels) as the primary mobile check. History details open as a bottom sheet above the navigation, scroll independently, preserve 44 px touch targets, and include top/bottom safe-area insets.
 
 - 393 px: single column, bottom sheets, sticky result above navigation, no horizontal scrolling.
 - 768 px: wider rows and two-column menu grid while preserving touch sizing.

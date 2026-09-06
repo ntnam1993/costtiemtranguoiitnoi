@@ -1,13 +1,14 @@
 import { CheckCircle, Info, WarningCircle } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { BatchIngredientRow } from "../components/batch-ingredient-row";
+import { CostHistory } from "../components/cost-history";
 import { NumberField } from "../components/number-field";
 import { ScreenHeader } from "../components/screen-header";
 import { preparations } from "../data/preparations";
 import { formatVnd } from "../domain/cost";
 import { isUnit, type PriceEntry, type Unit } from "../domain/models";
 import { calculatePreparationCost } from "../domain/prepared-cost";
-import type { StoredCostData } from "../state/use-cost-data";
+import type { CostHistoryDraft, CostHistoryLine, StoredCostData } from "../state/use-cost-data";
 
 const yieldUnits: readonly Unit[] = ["g", "kg", "ml", "l", "phần"];
 
@@ -18,6 +19,7 @@ interface BatchCostScreenProps {
   readonly onPriceChange: (key: string, entry: PriceEntry) => void;
   readonly onUsageMillilitersChange: (key: string, milliliters: number | null) => void;
   readonly onYieldChange: (key: string, quantity: number | null, unit: Unit) => void;
+  readonly onSaveHistory: (entry: CostHistoryDraft) => void;
 }
 
 export const BatchCostScreen = ({
@@ -27,6 +29,7 @@ export const BatchCostScreen = ({
   onPriceChange,
   onUsageMillilitersChange,
   onYieldChange,
+  onSaveHistory,
 }: BatchCostScreenProps) => {
   const [showNotes, setShowNotes] = useState(false);
   const selected = preparations.find((item) => item.id === selectedId) ?? preparations[0];
@@ -50,6 +53,31 @@ export const BatchCostScreen = ({
     (item) => item.batchGroup === "tropical-hard-fruit",
   );
   const standaloneItems = recipe.ingredients.filter((item) => item.batchGroup === undefined);
+  const history = data.history.filter(
+    (entry) => entry.kind === "batch" && entry.productId === recipe.id,
+  );
+  const saveCurrentCost = () => {
+    const lines: CostHistoryLine[] = [];
+    for (const item of recipe.ingredients) {
+      const cost = result.lineCosts[item.id];
+      if (cost !== null && cost !== undefined) lines.push({ name: item.name, cost });
+    }
+    const yieldQuantity =
+      yieldEntry?.quantity !== undefined && yieldEntry.quantity !== null && yieldEntry.quantity > 0
+        ? yieldEntry.quantity
+        : null;
+    onSaveHistory({
+      kind: "batch",
+      productId: recipe.id,
+      productName: recipe.name,
+      total: result.batchCost,
+      lines,
+      missingCount: result.missingCount,
+      yieldQuantity,
+      yieldUnit: result.yieldUnit,
+      unitCost: result.unitCost,
+    });
+  };
 
   return (
     <main className="screen calculator-screen">
@@ -170,6 +198,12 @@ export const BatchCostScreen = ({
           </select>
         </div>
       </section>
+      <CostHistory
+        entries={history}
+        kind="batch"
+        productName={recipe.name}
+        onSave={saveCurrentCost}
+      />
       <section className="result-card" aria-live="polite">
         <div className="result-card__status">
           {result.unitCost === null ? (

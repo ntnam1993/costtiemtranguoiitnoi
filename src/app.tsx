@@ -59,6 +59,7 @@ export const App = () => {
           data={costData.data}
           selectedId={batchId}
           onPriceChange={costData.setBatchPrice}
+          onSaveHistory={costData.saveHistory}
           onSelect={setBatchId}
           onUsageMillilitersChange={costData.setBatchUsageMilliliters}
           onYieldChange={costData.setYield}
@@ -75,7 +76,11 @@ export const App = () => {
         />
       ) : null}
       {tab === "history" ? (
-        <HistoryScreen history={costData.data.history} onOpenCalculator={() => setTab("cup")} />
+        <HistoryScreen
+          history={costData.data.history}
+          onOpenBatch={() => setTab("batch")}
+          onOpenCup={() => setTab("cup")}
+        />
       ) : null}
       {tab === "settings" ? <SettingsScreen data={costData.data} onReset={resetData} /> : null}
       <nav aria-label="Điều hướng chính" className="bottom-nav">

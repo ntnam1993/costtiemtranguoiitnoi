@@ -24,14 +24,34 @@ const priceEntrySchema = z.object({
 });
 const yieldEntrySchema = z.object({ quantity: z.number().nullable(), unit: unitSchema });
 const historyLineSchema = z.object({ name: z.string(), cost: z.number() });
-const historyEntrySchema = z.object({
-  id: z.string(),
+const historyDraftFields = {
   productId: z.string(),
   productName: z.string(),
   total: z.number(),
-  savedAt: z.string(),
   lines: z.array(historyLineSchema),
+  missingCount: z.number().int().nonnegative().default(0),
+} as const;
+const cupHistoryDraftSchema = z.object({
+  ...historyDraftFields,
+  kind: z.literal("cup"),
 });
+const batchHistoryDraftSchema = z.object({
+  ...historyDraftFields,
+  kind: z.literal("batch"),
+  yieldQuantity: z.number().positive().nullable(),
+  yieldUnit: unitSchema,
+  unitCost: z.number().nonnegative().nullable(),
+});
+const historyDraftSchema = z.union([cupHistoryDraftSchema, batchHistoryDraftSchema]);
+const historyEntrySchema = z.union([
+  batchHistoryDraftSchema.extend({ id: z.string(), savedAt: z.string() }),
+  z.object({
+    ...historyDraftFields,
+    id: z.string(),
+    kind: z.literal("cup").default("cup"),
+    savedAt: z.string(),
+  }),
+]);
 const storedDataSchema = z.object({
   batchPrices: z.record(z.string(), priceEntrySchema),
   batchUsageMilliliters: z.record(z.string(), z.number().nullable()).default({}),
@@ -43,6 +63,7 @@ const storedDataSchema = z.object({
 
 export type StoredCostData = z.infer<typeof storedDataSchema>;
 export type CostHistoryLine = z.infer<typeof historyLineSchema>;
+export type CostHistoryDraft = z.infer<typeof historyDraftSchema>;
 export type CostHistoryEntry = z.infer<typeof historyEntrySchema>;
 
 const emptyData = (): StoredCostData => ({
@@ -108,25 +129,19 @@ export const useCostData = () => {
     }));
   }, []);
 
-  const saveHistory = useCallback(
-    (productId: string, productName: string, total: number, lines: readonly CostHistoryLine[]) => {
-      setData((current) => ({
-        ...current,
-        history: [
-          {
-            id: crypto.randomUUID(),
-            productId,
-            productName,
-            total,
-            savedAt: new Date().toISOString(),
-            lines: [...lines],
-          },
-          ...current.history,
-        ],
-      }));
-    },
-    [],
-  );
+  const saveHistory = useCallback((entry: CostHistoryDraft) => {
+    setData((current) => ({
+      ...current,
+      history: [
+        {
+          ...entry,
+          id: crypto.randomUUID(),
+          savedAt: new Date().toISOString(),
+        },
+        ...current.history,
+      ],
+    }));
+  }, []);
 
   const reset = useCallback(() => setData(emptyData()), []);
 

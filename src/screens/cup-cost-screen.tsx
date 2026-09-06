@@ -14,7 +14,7 @@ import { preparations } from "../data/preparations";
 import { calculateLineCost, formatVnd } from "../domain/cost";
 import type { PriceEntry, RecipeLine } from "../domain/models";
 import { calculatePreparationCost } from "../domain/prepared-cost";
-import type { CostHistoryLine, StoredCostData } from "../state/use-cost-data";
+import type { CostHistoryDraft, StoredCostData } from "../state/use-cost-data";
 
 const serviceLines: readonly RecipeLine[] = [
   { id: "da", name: "Đá", quantity: 1, unit: "phần", kind: "service" },
@@ -28,12 +28,7 @@ interface CupCostScreenProps {
   readonly onSelect: (id: string) => void;
   readonly onPriceChange: (key: string, entry: PriceEntry) => void;
   readonly onIncludedChange: (key: string, included: boolean) => void;
-  readonly onSaveHistory: (
-    productId: string,
-    productName: string,
-    total: number,
-    lines: readonly CostHistoryLine[],
-  ) => void;
+  readonly onSaveHistory: (entry: CostHistoryDraft) => void;
 }
 
 const linePriceKey = (productId: string, item: RecipeLine): string =>
@@ -94,17 +89,20 @@ export const CupCostScreen = ({
   });
   const missingCount = computed.filter((entry) => entry.included && entry.cost === null).length;
   const total = computed.reduce((sum, entry) => sum + (entry.cost ?? 0), 0);
-  const history = data.history.filter((entry) => entry.productId === product.id);
+  const history = data.history.filter(
+    (entry) => entry.kind === "cup" && entry.productId === product.id,
+  );
   const saveCurrentCost = () => {
-    if (missingCount > 0) return;
-    onSaveHistory(
-      product.id,
-      product.name,
+    onSaveHistory({
+      kind: "cup",
+      productId: product.id,
+      productName: product.name,
       total,
-      computed
+      missingCount,
+      lines: computed
         .filter((entry) => entry.included && entry.cost !== null)
         .map((entry) => ({ name: entry.item.name, cost: entry.cost ?? 0 })),
-    );
+    });
   };
 
   return (
@@ -215,8 +213,8 @@ export const CupCostScreen = ({
         chi phí bổ sung theo ly, do người dùng tự nhập.
       </p>
       <CostHistory
-        canSave={missingCount === 0}
         entries={history}
+        kind="cup"
         productName={product.name}
         onSave={saveCurrentCost}
       />
