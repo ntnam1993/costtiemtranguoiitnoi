@@ -1,4 +1,4 @@
-import { ArrowRight, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { ArrowRight, CookingPot, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScreenHeader } from "../components/screen-header";
 import { menuProducts } from "../data/menu-products";
@@ -13,11 +13,20 @@ const normalize = (value: string): string =>
 interface RecipeDialogProps {
   readonly product: MenuProduct;
   readonly onClose: () => void;
-  readonly onCalculate: () => void;
+  readonly onCalculateBatch: (batchId: string) => void;
+  readonly onCalculateCup: () => void;
 }
 
-const RecipeDialog = ({ product, onClose, onCalculate }: RecipeDialogProps) => {
+const RecipeDialog = ({
+  product,
+  onClose,
+  onCalculateBatch,
+  onCalculateCup,
+}: RecipeDialogProps) => {
   const closeButton = useRef<HTMLButtonElement>(null);
+  const primaryPreparationId = product.lines.find(
+    (item) => item.preparationId !== undefined,
+  )?.preparationId;
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -78,19 +87,31 @@ const RecipeDialog = ({ product, onClose, onCalculate }: RecipeDialogProps) => {
         <p className="source-note">
           Nguồn: {product.source.file} · mục “{product.source.section}”
         </p>
-        <button className="primary-button" type="button" onClick={onCalculate}>
-          Tính cost một ly <ArrowRight aria-hidden size={20} />
-        </button>
+        <div className="recipe-dialog__actions">
+          <button className="primary-button" type="button" onClick={onCalculateCup}>
+            Tính cost một ly <ArrowRight aria-hidden size={20} />
+          </button>
+          {primaryPreparationId === undefined ? null : (
+            <button
+              className="text-button recipe-dialog__batch-button"
+              type="button"
+              onClick={() => onCalculateBatch(primaryPreparationId)}
+            >
+              <CookingPot aria-hidden size={20} /> Tính cost mẻ nguyên liệu
+            </button>
+          )}
+        </div>
       </section>
     </div>
   );
 };
 
 interface MenuScreenProps {
-  readonly onCalculate: (productId: string) => void;
+  readonly onCalculateBatch: (batchId: string) => void;
+  readonly onCalculateCup: (productId: string) => void;
 }
 
-export const MenuScreen = ({ onCalculate }: MenuScreenProps) => {
+export const MenuScreen = ({ onCalculateBatch, onCalculateCup }: MenuScreenProps) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<MenuProduct | null>(null);
   const filtered = useMemo(() => {
@@ -151,7 +172,8 @@ export const MenuScreen = ({ onCalculate }: MenuScreenProps) => {
         <RecipeDialog
           product={selected}
           onClose={() => setSelected(null)}
-          onCalculate={() => onCalculate(selected.id)}
+          onCalculateBatch={onCalculateBatch}
+          onCalculateCup={() => onCalculateCup(selected.id)}
         />
       )}
     </main>

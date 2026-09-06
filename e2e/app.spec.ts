@@ -15,6 +15,10 @@ test("browses all documented drinks and opens a traceable recipe", async ({ page
   await expect(page.getByRole("dialog", { name: "Ổi hồng" })).toBeVisible();
   await expect(page.getByText(/CACH PHA CHE TRA/)).toBeVisible();
   await expect(page.getByText("100 ml", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tính cost mẻ nguyên liệu" })).toBeVisible();
+  await page.getByRole("button", { name: "Tính cost mẻ nguyên liệu" }).click();
+  await expect(page.getByRole("heading", { name: "Cost mẻ nguyên liệu" })).toBeVisible();
+  await expect(page.getByLabel("Chọn mẻ cần tính")).toHaveValue("oi-hong");
 });
 
 test("calculates a prepared batch and keeps excluded service costs out", async ({ page }) => {

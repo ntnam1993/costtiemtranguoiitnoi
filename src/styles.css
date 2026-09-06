@@ -556,6 +556,19 @@ p {
   margin: 14px 2px;
 }
 
+.recipe-dialog__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.recipe-dialog__batch-button {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .source-note--card {
   padding: 12px 14px;
   border: 1px solid var(--border);

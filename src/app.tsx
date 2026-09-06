@@ -38,6 +38,11 @@ export const App = () => {
     setTab("cup");
   };
 
+  const calculateBatch = (id: string) => {
+    setBatchId(id);
+    setTab("batch");
+  };
+
   const resetData = () => {
     if (window.confirm("Xóa toàn bộ giá, sản lượng và lịch sử cost trên thiết bị này?")) {
       costData.reset();
@@ -53,7 +58,9 @@ export const App = () => {
           <span>Giá đúng mùa, cost đúng món</span>
         </div>
       </div>
-      {tab === "menu" ? <MenuScreen onCalculate={calculateProduct} /> : null}
+      {tab === "menu" ? (
+        <MenuScreen onCalculateBatch={calculateBatch} onCalculateCup={calculateProduct} />
+      ) : null}
       {tab === "batch" ? (
         <BatchCostScreen
           data={costData.data}

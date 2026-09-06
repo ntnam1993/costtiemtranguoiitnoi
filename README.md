@@ -21,6 +21,8 @@ npm run test:e2e
 
 ## Hai màn hình tính cost
 
+Từ popup công thức trên **Thực đơn**, có thể mở trực tiếp cost một ly hoặc mẻ nguyên liệu chính được liên kết với món đang xem.
+
 - **Mẻ nguyên liệu**: chọn công thức ủ/ướp, nhập lượng thực dùng và tổng tiền của từng nguyên liệu trong mẻ, sau đó nhập lượng thành phẩm dùng được. Đường nhập đơn giá theo kg và lượng dùng thực tế. Sinh tố đóng chai nhập giá chai 1 lít và số ml dùng cho mẻ. Ứng dụng tự tính phần cost tương ứng và không gồm trà, đá, ly, nắp, ống hút hay chi phí phục vụ theo ly.
 - **Một ly**: chọn món, tự dùng đơn giá mẻ đã đủ dữ liệu khi đơn vị khớp, nhập giá còn thiếu và bật/tắt đá, bao bì hoặc thành phần theo cách bán thực tế.
 - **Lịch sử cost**: có thể lưu một mẻ hoặc một ly ở bất kỳ thời điểm nào. Bản còn thiếu giá được đánh dấu là tạm tính, ghi rõ số mục chưa đủ và chỉ liệt kê các thành phần đã tính được; lịch sử mẻ lưu thêm sản lượng thành phẩm, đơn vị và cost theo đơn vị khi có. Chạm vào một lần lưu để mở popup xem đầy đủ thông tin. Tab **Lịch sử** cho phép lọc và so sánh các kết quả đã hoàn chỉnh.

@@ -27,6 +27,7 @@ describe("canonical recipe data", () => {
   it("links cup components only to existing preparation recipes", () => {
     const preparationIds = new Set(preparations.map((item) => item.id));
     for (const product of menuProducts) {
+      expect(product.lines.some((item) => item.preparationId !== undefined)).toBe(true);
       for (const item of product.lines) {
         if (item.preparationId !== undefined)
           expect(preparationIds.has(item.preparationId)).toBe(true);

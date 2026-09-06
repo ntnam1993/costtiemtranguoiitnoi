@@ -20,7 +20,7 @@ The interface combines a clear operational calculator with the warmth of a Vietn
 
 - App shell: centered mobile column up to 720 px, fixed header context and fixed safe-area bottom navigation.
 - Menu card: fruit-colored marker, item number, name, short recipe metadata, clear disclosure action.
-- Recipe detail: bottom sheet on mobile, centered dialog on wider screens; source file and section always visible.
+- Recipe detail: bottom sheet on mobile, centered dialog on wider screens; source file and section always visible. Its two full-width actions open either the selected drink's per-cup calculator or the first linked preparation-batch calculator.
 - Price row: editable actual batch usage and its matching VND price, with specialized inputs for sugar by kilogram and bottled smoothie by milliliter.
 - Ingredient group: related inputs may sit inside one muted parent surface; compact child rows retain 44 px controls and calculated contributions while removing repeated helper copy.
 - Result card: dark green sticky summary with complete/incomplete label and missing-field count.
